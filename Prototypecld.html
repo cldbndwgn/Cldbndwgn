@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLDBNDWGN</title>
+  <style>
+    /* General hacker theme */
+    body, html {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: "Courier New", monospace;
+      overflow-x: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    nav {
+      background: #111;
+      padding: 10px;
+      text-align: center;
+    }
+    nav button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      background: #00ff00;
+      color: black;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+    nav button:hover {
+      background: #0f0;
+    }
+    .section {
+      padding: 20px;
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .card {
+      background: #111;
+      border: 1px solid #0f0;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px;
+    }
+    /* Matrix background effect */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <header>💻 CLDBNDWGN 💻</header>
+  <nav>
+    <button onclick="showSection('funfacts')">Fun Facts</button>
+    <button onclick="showSection('quiz')">Quiz</button>
+    <button onclick="showSection('generator')">Name Generator</button>
+  </nav>
+
+  <!-- Fun facts -->
+  <section id="funfacts" class="section active">
+    <h2>🎮 Gaming Fun Facts</h2>
+    <div id="facts"></div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz" class="section">
+    <h2>🕹️ Gaming Quiz</h2>
+    <div id="quizBox"></div>
+    <button onclick="submitQuiz()">Submit Answers</button>
+    <p id="quizResult"></p>
+  </section>
+
+  <!-- Name generator -->
+  <section id="generator" class="section">
+    <h2>⚡ Hacker Name Generator</h2>
+    <button onclick="generateName()">Generate Name</button>
+    <p id="genResult"></p>
+  </section>
+
+  <script>
+    // Section switching
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Fun facts list
+    const funFacts = [
+      "The first video game was created in 1958: 'Tennis for Two'.",
+      "Nintendo was founded in 1889 — as a playing card company.",
+      "Pac-Man was originally called 'Puck-Man'.",
+      "The PlayStation 2 is the best-selling console of all time.",
+      "Minecraft was created by Markus Persson, aka 'Notch'.",
+      "The longest gaming session recorded lasted over 35 hours.",
+      "Mario was originally called 'Jumpman'.",
+      "The first Easter egg in a game appeared in 'Adventure' (1980).",
+      "Sega once made a console called the Dreamcast.",
+      "The name 'Atari' comes from a Japanese word used in Go."
+    ];
+    const factsDiv = document.getElementById('facts');
+    funFacts.forEach(f => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.textContent = f;
+      factsDiv.appendChild(card);
+    });
+
+    // Quiz
+    const quizQuestions = [
+      {q: "What year was the first PlayStation released?", options: ["1994", "1996", "2000"], answer: "1994"},
+      {q: "Who created Minecraft?", options: ["Shigeru Miyamoto", "Markus Persson", "Gabe Newell"], answer: "Markus Persson"},
+      {q: "What is the name of Mario’s brother?", options: ["Luigi", "Wario", "Toad"], answer: "Luigi"},
+    ];
+    const quizBox = document.getElementById('quizBox');
+    quizQuestions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = `<p>${q.q}</p>` + q.options.map(o =>
+        `<label><input type="radio" name="q${i}" value="${o}"> ${o}</label><br>`
+      ).join("");
+      quizBox.appendChild(div);
+    });
+    function submitQuiz() {
+      let score = 0;
+      quizQuestions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && selected.value === q.answer) score++;
+      });
+      document.getElementById('quizResult').textContent =
+        `You got ${score} out of ${quizQuestions.length} correct!`;
+    }
+
+    // Hacker name generator
+    const adjectives = ["Dark", "Cyber", "Silent", "Shadow", "Ghost", "Zero", "Neo"];
+    const nouns = ["Byte", "Cipher", "Root", "Kernel", "Phantom", "Matrix", "Virus"];
+    function generateName() {
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const noun = nouns[Math.floor(Math.random() * nouns.length)];
+      document.getElementById('genResult').textContent = adj + " " + noun;
+    }
+
+    // Matrix background effect
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    const letters = "01".split("");
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({length: columns}).map(() => 1);
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0f0";
+      ctx.font = fontSize + "px monospace";
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 33);
+    window.addEventListener("resize", () => {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    });
+  </script>
+</body>
+</html>
